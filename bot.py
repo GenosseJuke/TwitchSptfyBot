@@ -3,6 +3,18 @@
 import config
 import spotify
 from twitchio.ext import commands
+from flask import Flask
+import threading
+
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "Bot is running!"
+
+def run_flask():
+    app.run(host='0.0.0.0', port=3000)
+
 
 class Bot(commands.Bot):
     def __init__(self):
@@ -26,6 +38,13 @@ class Bot(commands.Bot):
         response = spotify.add_song_to_queue(song_name)
         await ctx.send(response)
 
-if __name__ == '__main__':
+
+# Hauptprogramm starten
+if __name__ == "__main__":
+    # Flask im Hintergrund starten
+    flask_thread = threading.Thread(target=run_flask)
+    flask_thread.start()
+
+    # Bot starten
     bot = Bot()
     bot.run()
