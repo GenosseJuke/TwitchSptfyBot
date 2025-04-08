@@ -1,0 +1,6 @@
+# Virtuelle Umgebung ausschließen
+venv/
+
+# Python __pycache__ Ordner ausschließen
+__pycache__/
+*.pyc
