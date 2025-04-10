@@ -4,12 +4,12 @@ import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 import config
 
-# Spotify Authentifizierung
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
     client_id=config.SPOTIFY_CLIENT_ID,
     client_secret=config.SPOTIFY_CLIENT_SECRET,
     redirect_uri=config.SPOTIFY_REDIRECT_URI,
-    scope="user-read-currently-playing user-modify-playback-state"
+    scope="user-read-currently-playing user-modify-playback-state",
+    cache_path=".spotify_token_cache"
 ))
 
 # Funktion, die den aktuellen Songtitel abruft
