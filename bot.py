@@ -20,8 +20,14 @@ class Bot(commands.Bot):
 
     @commands.command(name="sr", aliases=["wunsch", "songrequest"])
     async def sr(self, ctx, *, song_name):
+        # Füge den Song zur Warteschlange hinzu
         response = spotify.add_song_to_queue(song_name)
-        await ctx.send(f"Song '{song_name}' wurde zur Warteschlange hinzugefügt!")
+        
+        # Hole die Songdaten von Spotify nach der Warteschlange
+        song_info = spotify.get_current_song()
+        
+        # Sende eine Antwort, die den hinzugefügten Song zeigt
+        await ctx.send(f"Song '{song_name}' wurde zur Warteschlange hinzugefügt! Jetzt spielt: {song_info}")
 
 if __name__ == "__main__":
     bot = Bot()
