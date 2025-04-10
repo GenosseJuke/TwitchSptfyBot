@@ -1,6 +1,7 @@
 import config
 import spotify
 from twitchio.ext import commands
+import asyncio  # Wir brauchen asyncio für die Verzögerung
 
 class Bot(commands.Bot):
     def __init__(self):
@@ -23,7 +24,10 @@ class Bot(commands.Bot):
         # Füge den Song zur Warteschlange hinzu
         response = spotify.add_song_to_queue(song_name)
         
-        # Hole die Songdaten von Spotify nach der Warteschlange
+        # Warten, damit der Song in der Warteschlange Zeit hat, hinzuzufügen
+        await asyncio.sleep(2)  # Hier wird eine kurze Verzögerung von 2 Sekunden eingefügt
+        
+        # Hole die aktuellen Songdaten nach der Warteschlange
         song_info = spotify.get_current_song()
         
         # Sende eine Antwort, die den hinzugefügten Song zeigt
