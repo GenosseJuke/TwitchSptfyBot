@@ -1,21 +1,8 @@
-import threading
-from flask import Flask
 import config
 import spotify
 from twitchio.ext import commands
+from keep_alive import keep_alive  # 🟩 Neu dazu
 
-# Flask Webserver
-app = Flask(__name__)
-
-@app.route("/")
-def home():
-    return "Bot läuft!"
-
-@app.route("/healthz")
-def healthz():
-    return "ok"
-
-# Twitch Bot
 class Bot(commands.Bot):
     def __init__(self):
         super().__init__(
@@ -36,10 +23,9 @@ class Bot(commands.Bot):
     async def sr(self, ctx, *, song_name):
         response = spotify.add_song_to_queue(song_name)
         song_info = spotify.get_current_song()
-        await ctx.send(f"Song wurde zur Warteschlange hinzugefügt! Jetzt spielt: {song_info}")
+        await ctx.send(f"{response} Jetzt spielt: {song_info}")
 
-# Start beides
 if __name__ == "__main__":
-    threading.Thread(target=lambda: app.run(host="0.0.0.0", port=10000)).start()
+    keep_alive()  # 🟩 Damit Render wach bleibt
     bot = Bot()
     bot.run()
