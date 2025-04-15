@@ -7,7 +7,7 @@ auth_manager = SpotifyOAuth(
     client_id=config.SPOTIFY_CLIENT_ID,
     client_secret=config.SPOTIFY_CLIENT_SECRET,
     redirect_uri=config.SPOTIFY_REDIRECT_URI,
-    scope="user-read-currently-playing user-modify-playback-state",
+    scope="user-read-currently-playing user-modify-playback-state user-library-read",
     cache_path=".spotify_token_cache",
     open_browser=False  # wichtig für Headless-Umgebungen
 )
@@ -35,7 +35,7 @@ def get_song_uri(song_name_or_url):
     match = re.match(spotify_url_pattern, song_name_or_url)
 
     if match:
-        # Wenn es ein Link ist, extrahiere die URI
+        # Wenn es ein Link ist, gib den Link direkt zurück
         return song_name_or_url
     else:
         # Wenn es kein Link ist, suche nach dem Song
@@ -46,10 +46,18 @@ def get_song_uri(song_name_or_url):
 
 def add_song_to_queue(song_name_or_url):
     try:
+        # Hole die Song-URI (ob von Link oder Name)
         song_uri = get_song_uri(song_name_or_url)
         if song_uri:
-            sp.add_to_queue(song_uri)
-            return f"Song '{song_name_or_url}' wurde zur Warteschlange hinzugefügt!"
+            # Prüfe, ob ein aktives Gerät existiert
+            devices = sp.devices()
+            if devices["devices"]:
+                active_device = devices["devices"][0]["id"]
+                sp.add_to_queue(song_uri, device_id=active_device)
+                return f"Song '{song_name_or_url}' wurde zur Warteschlange hinzugefügt!"
+            else:
+                # Wenn kein aktives Gerät vorhanden ist, starte ein neues Player
+                return "Kein aktives Gerät gefunden. Bitte starte Spotify und spiele etwas Musik."
         return "Kein passender Song gefunden."
     except Exception as e:
         return f"Fehler beim Hinzufügen zur Warteschlange: {e}"
